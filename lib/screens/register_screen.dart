@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:zsosu/models/user_model.dart';
 import 'package:zsosu/utils/database_helper.dart';
 
@@ -26,19 +27,6 @@ class RegisterScreen extends StatelessWidget {
               height: MediaQuery.of(context).size.height,
               width: double.infinity,
               fit: BoxFit.cover,
-            ),
-            IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: CircleAvatar(
-                child: Icon(
-                  Icons.arrow_back_ios_new,
-                  size: 15,
-                ),
-                radius: 15,
-                backgroundColor: Colors.white,
-              ),
             ),
             Container(
               width: double.infinity,
@@ -69,7 +57,8 @@ class RegisterScreen extends StatelessWidget {
               alignment: FractionalOffset.bottomCenter,
               child: ClipRRect(
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(70),
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
                 ),
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.75,
@@ -215,18 +204,38 @@ class RegisterScreen extends StatelessWidget {
                             primary: Colors.green[900],
                           ),
                           onPressed: () {
-                            bool isPasswordsEqual = _passwordController.text ==
-                                _confirmPasswordController.text;
+                            bool isPasswordsEqual = (_passwordController.text ==
+                                _confirmPasswordController.text);
                             if (isPasswordsEqual) {
                               User user = User(
-                                id: 1,
                                 firstName: _firstNameController.text,
                                 lastName: _lastNameController.text,
                                 email: _emailController.text,
                                 password: _passwordController.text,
                               );
-                              DatabaseHelper.instance.insertUser(user);
-                              Navigator.pushNamed(context, "/home");
+                              if ((user.lastName.isNotEmpty) ||
+                                  (user.lastName.isNotEmpty) ||
+                                  (user.email.isNotEmpty) ||
+                                  (user.password.isNotEmpty)) {
+                                DatabaseHelper.instance.insertUser(user);
+                                Navigator.pushNamed(context, "/home");
+                                final box = GetStorage();
+                                box.write('loggedIn', true);
+                              } else {
+                                const snackBar = SnackBar(
+                                  content: Text("Please fill missing fields"),
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  snackBar,
+                                );
+                              }
+                            } else {
+                              const snackBar = SnackBar(
+                                content: Text("Passwords does not match"),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                snackBar,
+                              );
                             }
                           },
                           child: Text(

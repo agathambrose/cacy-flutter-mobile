@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:zsosu/screens/home_screen.dart';
 import 'package:zsosu/screens/intro_screen.dart';
 import 'package:zsosu/screens/login_screen.dart';
 import 'package:zsosu/screens/register_screen.dart';
 
-void main() {
+main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const App());
+  await GetStorage.init();
+  runApp(App());
 }
 
 class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
+  App({Key? key}) : super(key: key);
+  final box = GetStorage();
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    final loggedIn = box.read('loggedIn') ?? false;
+    return GetMaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      initialRoute: '/',
+      initialRoute: loggedIn ? '/home' : '/',
       routes: {
         '/': (context) => IntroScreen(),
         '/login': (context) => LoginScreen(),

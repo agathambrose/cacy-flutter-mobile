@@ -6,7 +6,7 @@ class User {
   final String password;
 
   User(
-      {required this.id,
+      {this.id = 1,
       required this.firstName,
       required this.lastName,
       required this.email,

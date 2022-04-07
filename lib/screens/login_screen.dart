@@ -1,16 +1,16 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:zsosu/models/user_model.dart';
+import 'package:zsosu/utils/database_helper.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  LoginScreen({Key? key}) : super(key: key);
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 1,
-      ),
       body: SafeArea(
         child: Stack(
           children: [
@@ -20,24 +20,12 @@ class LoginScreen extends StatelessWidget {
               fit: BoxFit.cover,
               width: double.infinity,
             ),
-            IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: CircleAvatar(
-                child: Icon(
-                  Icons.arrow_back_ios_new,
-                  size: 15,
-                ),
-                radius: 15,
-                backgroundColor: Colors.white,
-              ),
-            ),
             Align(
               alignment: FractionalOffset.bottomCenter,
               child: ClipRRect(
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(70),
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
                 ),
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.65,
@@ -46,6 +34,9 @@ class LoginScreen extends StatelessWidget {
                   color: Colors.white,
                   child: ListView(
                     children: [
+                      SizedBox(
+                        height: 20,
+                      ),
                       Text(
                         "Welcome back",
                         style: TextStyle(
@@ -63,8 +54,9 @@ class LoginScreen extends StatelessWidget {
                         height: 40,
                       ),
                       TextField(
+                        controller: _emailController,
                         decoration: InputDecoration(
-                          hintText: "Email / Username",
+                          hintText: "Email",
                           hintStyle: TextStyle(
                             color: Colors.green[400],
                             fontWeight: FontWeight.w600,
@@ -80,6 +72,7 @@ class LoginScreen extends StatelessWidget {
                         height: 15,
                       ),
                       TextField(
+                        controller: _passwordController,
                         obscureText: true,
                         decoration: InputDecoration(
                           hintText: "Password",
@@ -93,39 +86,10 @@ class LoginScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(30),
                             borderSide: BorderSide.none,
                           ),
-                          suffixIcon: Icon(
-                            Icons.visibility_off,
-                            color: Colors.green[400],
-                          ),
                         ),
                       ),
                       SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.circle_sharp,
-                                size: 20,
-                                color: Colors.black54,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text("Remember me"),
-                            ],
-                          ),
-                          TextButton(
-                            onPressed: () {},
-                            child: Text("Forgot password?"),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.12,
+                        height: 100,
                       ),
                       Container(
                         width: double.infinity,
@@ -134,7 +98,26 @@ class LoginScreen extends StatelessWidget {
                             shape: StadiumBorder(),
                             primary: Colors.green[900],
                           ),
-                          onPressed: () {},
+                          onPressed: () async {
+                            User user = await DatabaseHelper.instance.getUser();
+                            bool doesCredentialsMatch =
+                                (user.password == _passwordController.text) &&
+                                    (user.email == _emailController.text) &&
+                                    (user.email != "") &&
+                                    (user.password != "");
+                            if (doesCredentialsMatch) {
+                              final box = GetStorage();
+                              box.write('loggedIn', true);
+                              Navigator.pushNamed(context, "/home");
+                            } else {
+                              const snackBar = SnackBar(
+                                content: Text("Wrong credentials"),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                snackBar,
+                              );
+                            }
+                          },
                           child: Text(
                             "Login",
                             style: TextStyle(

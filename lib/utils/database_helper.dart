@@ -29,21 +29,26 @@ class DatabaseHelper {
 
   Future<int> insertUser(User user) async {
     Database db = await instance.database;
-    return await db.insert('user', user.toJson());
+    return await db.insert(
+      'user',
+      user.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
-  Future<User> getUser(int id) async {
+  Future<User> getUser() async {
     Database db = await instance.database;
     final List<Map<String, dynamic>> maps =
-        await db.query('user', where: 'id = ?', whereArgs: [id]);
-    return User.fromJson(maps.first);
-  }
-
-  Future<List<User>> getUsers() async {
-    Database db = await instance.database;
-    final List<Map<String, dynamic>> maps = await db.query('user');
-    return List.generate(maps.length, (i) {
-      return User.fromJson(maps[i]);
-    });
+        await db.query('user', where: 'id = ?', whereArgs: [1]);
+    if (maps.isNotEmpty) {
+      return User.fromJson(maps.first);
+    } else {
+      return User(
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+      );
+    }
   }
 }
