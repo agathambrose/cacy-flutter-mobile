@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:zsosu/screens/home_screen.dart';
+import 'package:zsosu/screens/intro_screen.dart';
 import 'package:zsosu/screens/login_screen.dart';
 import 'package:zsosu/screens/register_screen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const App());
 }
 
@@ -20,9 +22,10 @@ class App extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => HomeScreen(),
+        '/': (context) => IntroScreen(),
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
+        '/home': (context) => HomeScreen(),
       },
       debugShowCheckedModeBanner: false,
     );

@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:zsosu/models/user_model.dart';
+import 'package:zsosu/utils/database_helper.dart';
 
 class RegisterScreen extends StatelessWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  RegisterScreen({Key? key}) : super(key: key);
+
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +82,7 @@ class RegisterScreen extends StatelessWidget {
                         height: 40,
                       ),
                       TextField(
+                        controller: _firstNameController,
                         decoration: InputDecoration(
                           hintText: "First Name",
                           hintStyle: TextStyle(
@@ -82,14 +92,16 @@ class RegisterScreen extends StatelessWidget {
                           fillColor: Colors.green[50],
                           filled: true,
                           border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30),
-                              borderSide: BorderSide.none),
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide.none,
+                          ),
                         ),
                       ),
                       SizedBox(
                         height: 15,
                       ),
                       TextField(
+                        controller: _lastNameController,
                         decoration: InputDecoration(
                           hintText: "Last Name",
                           hintStyle: TextStyle(
@@ -108,6 +120,7 @@ class RegisterScreen extends StatelessWidget {
                         height: 15,
                       ),
                       TextField(
+                        controller: _emailController,
                         decoration: InputDecoration(
                           hintText: "Email",
                           hintStyle: TextStyle(
@@ -126,6 +139,7 @@ class RegisterScreen extends StatelessWidget {
                         height: 15,
                       ),
                       TextField(
+                        controller: _passwordController,
                         obscureText: true,
                         decoration: InputDecoration(
                           hintText: "Password",
@@ -145,6 +159,7 @@ class RegisterScreen extends StatelessWidget {
                         height: 15,
                       ),
                       TextField(
+                        controller: _confirmPasswordController,
                         obscureText: true,
                         decoration: InputDecoration(
                           hintText: "Confirm Password",
@@ -192,14 +207,28 @@ class RegisterScreen extends StatelessWidget {
                       SizedBox(
                         height: 50,
                       ),
-                      Container(
+                      SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             shape: StadiumBorder(),
                             primary: Colors.green[900],
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            bool isPasswordsEqual = _passwordController.text ==
+                                _confirmPasswordController.text;
+                            if (isPasswordsEqual) {
+                              User user = User(
+                                id: 1,
+                                firstName: _firstNameController.text,
+                                lastName: _lastNameController.text,
+                                email: _emailController.text,
+                                password: _passwordController.text,
+                              );
+                              DatabaseHelper.instance.insertUser(user);
+                              Navigator.pushNamed(context, "/home");
+                            }
+                          },
                           child: Text(
                             "Sign Up ",
                             style: TextStyle(
